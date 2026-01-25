@@ -1,5 +1,12 @@
 # - github.com/Vauth/duckgpt - #
 
+# ---------------------------------------------------------------------- #
+# MAINTENANCE NOTICE: This utility is currently non-functional due to    #
+# structural changes and enhanced bot-detection measures implemented by  #
+# the host provider (DuckDuckGo). As these changes bypass the current    #
+# scraping logic, this script is preserved for archival purposes only.   #
+# ---------------------------------------------------------------------- #
+
 import json
 import requests
 from typing import List, Dict, Tuple
@@ -70,3 +77,4 @@ class DuckGPT:
             return ''.join(messages)
         else:
             raise self.OperationError("Chat(): " + response.text)
+
