@@ -2,78 +2,59 @@
 // - github.com/Vauth/duckgpt - //
 // ---------------------------- //
 
-const MODELS = ['gpt-4o-mini', 'o3-mini', 'claude-3-haiku-20240307', 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', 'mistralai/Mixtral-8x7B-Instruct-v0.1'];
-const MAIN_MODEL = 'gpt-4o-mini'; 
-const STATUS_URL = 'https://duckduckgo.com/duckchat/v1/status';
-const CHAT_API = 'https://duckduckgo.com/duckchat/v1/chat';
+const MODELS = [
+  '@cf/meta/llama-3.1-8b-instruct',      // Best balanced model (Recommended)
+  '@cf/meta/llama-3.2-3b-instruct',      // Ultra-fast, lightweight
+  '@cf/meta/llama-3.1-70b-instruct',     // High intelligence (Uses more neurons)
+  '@cf/mistral/mistral-7b-instruct-v0.1', // Reliable alternative to Llama
+  '@cf/google/gemma-7b-it',              // Google's lightweight model
+  '@cf/qwen/qwen1.5-7b-chat'             // Good for multilingual tasks
+];
 
+const MAIN_MODEL = '@cf/meta/llama-3.1-8b-instruct'; 
 const ERROR_404 = {"action":"error", "status": 404, "usage": "GET /chat/?prompt=<text>&model=<model>&history=<List[Dict{str, str}]>", "models": MODELS};
-const ERROR_403 = {"action":"error", "status": 403, "response": "Wrong history syntax", "example":"[{'role': 'user','content': 'Expert python geek'}]"};
-
 const HEAD_JSON = { 'content-type': 'application/json', 'Access-Control-Allow-Origin': "*"};
 const HEAD_HTML = { 'content-type': 'text/html', 'Access-Control-Allow-Origin': "*"};
 
 
 // ---------- Event Listener ---------- //
 
-addEventListener('fetch', event => { 
-  event.respondWith(handleRequest(event.request))
-})
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const prompt = url.searchParams.get('prompt');
+    const history = url.searchParams.get('history') || '[]';
+    const model = url.searchParams.get('model') || MAIN_MODEL;
+    
+    if (url.pathname === "/") {return new Response(HTML, { headers: HEAD_HTML });}
 
-async function handleRequest(request) {
-  let url = new URL(request.url);
-  let prompt = url.searchParams.get('prompt');
-  let history = url.searchParams.get('history') || '[]';
-  let model = url.searchParams.get('model') || MAIN_MODEL;
+    if (prompt && url.pathname === "/chat/") {
+      const response = await Chat(prompt, history, model, env);
+      return new Response(JSON.stringify(response), { headers: HEAD_JSON });
+    } 
 
-  if (url.pathname == "/") {
-    let response = HTML;
-    return new Response(response, {headers: HEAD_HTML});
+    return new Response(JSON.stringify(ERROR_404), {status: 404, headers: HEAD_JSON});
   }
-
-  if (prompt && url.pathname == "/chat/") {
-    let response = JSON.stringify(await Chat(prompt, history, model));
-    return new Response(response, {headers: HEAD_JSON});
-  } else {
-    let response = JSON.stringify(ERROR_404);
-    return new Response(response, {headers: HEAD_JSON});
-  }
-}
+};
 
 // ---------- Duckgpt Function ---------- //
 
-async function Chat(prompt, history, model) {
-  let headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0',
-    'Accept': '*/*',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Accept-Encoding': 'gzip, deflate, br, zstd',
-    'Referer': 'https://duckduckgo.com/',
-    'Cache-Control': 'no-store',
-    'x-vqd-accept': '1',
-    'Connection': 'keep-alive',
-    'Cookie': 'dcm=3',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-origin',
-    'Priority': 'u=4',
-    'Pragma': 'no-cache',
-    'TE': 'trailers'
+async function Chat(prompt, history, model, env) {
+  try {
+    const messages = JSON.parse(history);
+    messages.push({ role: "user", content: prompt });
+
+    const response = await env.AI.run(model, {
+      messages: [
+        { role: "system", content: "You are a helpful assistant named 'DuckGPT'." },
+        ...messages
+      ]
+    });
+
+    return {"action":"success", "status": 200, "response": response.response, "model": model};
+  } catch (error) {
+    return { "action":"error", "status": 403, "response": error.message };
   }
-
-  const vdq = await fetch(STATUS_URL, { headers: headers });
-  headers['x-vqd-4'] = vdq.headers.get('x-vqd-4');
-  headers['x-vqd-hash-1'] = vdq.headers.get('x-vqd-hash-1');
-  headers['Content-Type'] = 'application/json'; let message;
-
-  try {message = JSON.parse(history).concat([{ role: 'user', content: prompt }])
-  } catch {return ERROR_403}
-
-  let Response = await (await fetch(CHAT_API, { method: 'POST', headers: headers, body: JSON.stringify({model: model, messages: message}) })).text();
-  let chatMessages = Response.split('\n').filter(line => line.includes('message')).map(line => JSON.parse(line.split('data: ')[1]).message).join('');
-  
-  if (chatMessages == "") {return Response;}
-  else {return {"action":"success", "status": 200, "response": chatMessages, "model": model}}
 }
 
 // ----------------------------- //
