@@ -1,5 +1,5 @@
 <h1>Duck <a href="#Favicon"><img src="https://github.com/user-attachments/assets/b11de9df-f6b1-47a8-973f-cf66375748b9" width="33px"></a> GPT</h1>
-<p>Unlimited ChatGPT using cloudflare workers and **workers AI**.</p>
+<p>Unlimited ChatGPT using cloudflare workers and <b>workers AI</b>.</p>
 
 <br>
 
@@ -19,6 +19,9 @@
 | `@cf/mistral/mistral-7b-instruct-v0.1`| A solid, proven alternative to Llama. |
 | `@cf/google/gemma-7b-it` | Lightweight and instruction-tuned. |
 | `@cf/qwen/qwen1.5-7b-chat` | Excellent performance in chat-based scenarios. |
+
+> [!WARNING]
+> Check out [Cloudflare Limits](#-cloudflare-limits-free-plan) and choose a model based on your usage.
 
 <br>
 
@@ -42,6 +45,12 @@
 - **Workers AI:**
     - **Daily Neurons:** 10,000 per day.
     - **Text Generation:** 300 requests per min.
+
+### Neurons Costs:
+| Model Type | Neurons Cost per Request | Daily Requests |
+| :--- | :--- | :--- |
+| **Small LLMs** (e.g., Llama 3 8B) | ~50–150 | ~2,200 |
+| **Large LLMs** (e.g., Llama 3 70B+) | ~500–1,500 | ~1000 |
 
 > [!NOTE]
 > If you exceed these limits, Cloudflare will return a **429 (Too Many Requests)** error. On the Paid plan, you will only be billed for Neurons used beyond the initial 10,000 daily free allowance.
@@ -107,4 +116,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
 
