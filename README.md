@@ -1,5 +1,5 @@
 <h1>Duck <a href="#Favicon"><img src="https://github.com/user-attachments/assets/b11de9df-f6b1-47a8-973f-cf66375748b9" width="33px"></a> GPT</h1>
-<p>Unlimited ChatGPT using cloudflare workers and duckchat.</p>
+<p>Unlimited ChatGPT using cloudflare workers and **workers AI**.</p>
 
 <br>
 
@@ -11,11 +11,14 @@
 <br>
 
 ## 📂 Models
-- `gpt-4o-mini`
-- `o3-mini`
-- `claude-3-haiku-20240307`
-- `mistralai/Mixtral-8x7B-Instruct-v0.1`
-- `meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo`
+| Models | Use Case |
+| :--- | :--- |
+| `@cf/meta/llama-3.1-8b-instruct` | Recommended for general tasks and efficiency. |
+| `@cf/meta/llama-3.2-3b-instruct` | Lightweight and optimized for speed/latency. |
+| `@cf/meta/llama-3.1-70b-instruct`| Best for complex reasoning and logic. |
+| `@cf/mistral/mistral-7b-instruct-v0.1`| A solid, proven alternative to Llama. |
+| `@cf/google/gemma-7b-it` | Lightweight and instruction-tuned. |
+| `@cf/qwen/qwen1.5-7b-chat` | Excellent performance in chat-based scenarios. |
 
 <br>
 
@@ -23,11 +26,25 @@
 - Create a [Cloudflare](https://www.cloudflare.com/) **account**.
 - Navigate to `Workers & Pages > Create > Create Worker`.
 - Deploy the worker by clicking **Deploy**.
+- Add AI binding in **Settings** name it `AI`.
 - Edit the code by clicking **Edit Code**.
-- Upload [worker.js](https://github.com/Vauth/duckgpt/blob/main/worker/worker.js) into **Cloudflare**.
+- Upload [worker.js](worker/worker.js) into **Cloudflare**.
 - Finally, **Deploy**.
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/vauth/duckgpt)
+
+<br>
+
+## 📊 Cloudflare Limits (Free Plan)
+- **Workers:**
+    - **Request Limit:** 100,000 per day.
+    - **CPU Time:** 10 ms per request.
+- **Workers AI:**
+    - **Daily Neurons:** 10,000 per day.
+    - **Text Generation:** 300 requests per min.
+
+> [!NOTE]
+> If you exceed these limits, Cloudflare will return a **429 (Too Many Requests)** error. On the Paid plan, you will only be billed for Neurons used beyond the initial 10,000 daily free allowance.
 
 <br>
 
@@ -41,7 +58,7 @@ Check out the live demo [here](https://duckgpt.live). ([API Endpoint](https://du
 
 <br>
 
-## 📦 Python Usage ([main.py](https://github.com/Vauth/duckgpt/blob/main/main.py))
+## 📦 Python Usage ([main.py](main.py)) [DEAD]
 ```python
 if __name__ == "__main__":
     Client = DuckGPT(model="gpt-4o-mini")
@@ -70,7 +87,7 @@ Contributions are welcome! Feel free to submit a pull request or report an issue
 ```
 MIT License
 
-Copyright (c) 2024 Vauth
+Copyright (c) 2026 Vauth
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -90,3 +107,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
